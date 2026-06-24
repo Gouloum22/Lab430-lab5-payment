@@ -1,0 +1,36 @@
+name: CD - Payments API
+
+on:
+  workflow_run:
+    workflows: ["CI - Payments API"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  cd:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          echo "DB_HOST=mysql_payments" > .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_NAME=labo05_payments_db" >> .env
+          echo "DB_USER=labo05" >> .env
+          echo "DB_PASSWORD=labo05" >> .env
+
+      - name: Create Docker network
+        run: docker network create labo05-network || true
+
+      - name: Deploy Payments API
+        run: |
+          docker compose down
+          docker compose up -d --build
+
+      - name: Show deployment containers
+        run: docker ps

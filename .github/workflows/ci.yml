@@ -1,0 +1,45 @@
+name: CI - Payments API
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          echo "DB_HOST=mysql_payments" > .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_NAME=labo05_payments_db" >> .env
+          echo "DB_USER=labo05" >> .env
+          echo "DB_PASSWORD=labo05" >> .env
+
+      - name: Create Docker network
+        run: docker network create labo05-network || true
+
+      - name: Build containers
+        run: docker compose build
+
+      - name: Start containers
+        run: docker compose up -d
+
+      - name: Wait for Payments API
+        run: sleep 25
+
+      - name: Smoke test - create payment
+        run: |
+          curl -f -X POST http://localhost:5009/payments \
+            -H "Content-Type: application/json" \
+            -d "{\"user_id\":1,\"order_id\":1,\"total_amount\":99.53}"
+
+      - name: Show containers
+        run: docker ps
