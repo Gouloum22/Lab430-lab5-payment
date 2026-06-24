@@ -1,6 +1,7 @@
 # Labo 05 - Microservice de paiement
+
 <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Ets_quebec_logo.png" width="250">    
-ÉTS - LOG430 - Architecture logicielle - Chargé de laboratoire: Gabriel C. Ullmann.   
+ÉTS - LOG430 - Architecture logicielle - Chargé de laboratoire: Gabriel C. Ullmann .
 
 Microservice de paiement qui dessert l'application Store Manager.
 
